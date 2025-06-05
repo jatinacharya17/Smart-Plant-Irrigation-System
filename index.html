@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Plant Irrigation System using Arduino</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #4a90e2;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Main Content */
+        main {
+            background: white;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: #4a90e2;
+            border-radius: 2px;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        /* Components Section */
+        .components {
+            background: #f8f9fa;
+        }
+
+        .components-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .component-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .component-icon {
+            width: 50px;
+            height: 50px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #1976d2;
+        }
+
+        /* How It Works */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .step h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        /* Code Section */
+        .code-section {
+            background: #1e1e1e;
+            color: #f8f8f2;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .code-section pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Benefits */
+        .benefits {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .benefit-item {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .benefit-item h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">🌱 SmartIrrigation</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#components">Components</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#benefits">Benefits</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Smart Plant Irrigation System</h1>
+                <p>Automate your garden with an Arduino-based system using a soil moisture sensor, relay module, and water pump. Learn how it conserves water, improves plant care, and is easy to build with step-by-step guidance—all on one page.</p>
+                <a href="#overview" class="cta-button">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section id="overview" class="container">
+            <h2 class="section-title">Project Overview</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Arduino-Powered</h3>
+                    <p>Built with Arduino microcontroller for reliable automation and easy programming. Perfect for beginners and experts alike.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💧</div>
+                    <h3>Water Conservation</h3>
+                    <p>Intelligent watering based on actual soil moisture levels, preventing overwatering and saving precious water resources.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Easy Monitoring</h3>
+                    <p>Real-time monitoring of soil moisture levels with visual indicators and automated responses.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="components" class="components">
+            <div class="container">
+                <h2 class="section-title">Required Components</h2>
+                <div class="components-list">
+                    <div class="component-item">
+                        <div class="component-icon">🔧</div>
+                        <div>
+                            <h4>Arduino Uno R3</h4>
+                            <p>Main microcontroller board</p>
+                        </div>
+                    </div>
+                    <div class="component-item">
+                        <div class="component-icon">🌡️</div>
+                        <div>
+                            <h4>Soil Moisture Sensor</h4>
+                            <p>Detects soil humidity levels</p>
+                        </div>
+                    </div>
+                    <div class="component-item">
+                        <div class="component-icon">⚡</div>
+                        <div>
+                            <h4>Relay Module</h4>
+                            <p>Controls water pump operation</p>
+                        </div>
+                    </div>
+                    <div class="component-item">
+                        <div class="component-icon">💧</div>
+                        <div>
+                            <h4>Water Pump</h4>
+                            <p>12V submersible water pump</p>
+                        </div>
+                    </div>
+                    <div class="component-item">
+                        <div class="component-icon">🔌</div>
+                        <div>
+                            <h4>Power Supply</h4>
+                            <p>12V DC adapter for pump</p>
+                        </div>
+                    </div>
+                    <div class="component-item">
+                        <div class="component-icon">🔗</div>
+                        <div>
+                            <h4>Jumper Wires</h4>
+                            <p>For connections and wiring</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sensor Reading</h3>
+                    <p>Soil moisture sensor continuously monitors the moisture level in the soil and sends analog data to Arduino.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Data Processing</h3>
+                    <p>Arduino processes the sensor data and compares it with the predefined threshold moisture level.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Decision Making</h3>
+                    <p>If moisture level is below threshold, Arduino sends signal to relay module to activate the water pump.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Automatic Watering</h3>
+                    <p>Water pump runs for a predetermined time, then stops. System continues monitoring for next cycle.</p>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3 style="color: #f8f8f2; margin-bottom: 1rem;">Sample Arduino Code</h3>
+                <pre><code>// Smart Plant Irrigation System
+#define MOISTURE_SENSOR A0
+#define RELAY_PIN 7
+#define THRESHOLD 300
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH); // Relay off initially
+}
+
+void loop() {
+  int moistureLevel = analogRead(MOISTURE_SENSOR);
+  Serial.print("Moisture Level: ");
+  Serial.println(moistureLevel);
+  
+  if (moistureLevel < THRESHOLD) {
+    Serial.println("Soil is dry - Starting irrigation");
+    digitalWrite(RELAY_PIN, LOW);  // Turn on pump
+    delay(5000);                   // Water for 5 seconds
+    digitalWrite(RELAY_PIN, HIGH); // Turn off pump
+    delay(10000);                  // Wait 10 seconds
+  }
+  
+  delay(2000); // Check every 2 seconds
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="benefits">
+            <div class="container">
+                <h2 class="section-title">Key Benefits</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <h3>💰 Cost Effective</h3>
+                        <p>Low-cost components make this project accessible to everyone while providing professional results.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <h3>🌍 Eco-Friendly</h3>
+                        <p>Reduces water waste by watering only when needed, contributing to environmental conservation.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <h3>⏰ Time Saving</h3>
+                        <p>Eliminates the need for manual watering, perfect for busy schedules or vacation periods.</p>
+                    </div>
+                    <div class="benefit-item">
+                        <h3>📈 Better Plant Health</h3>
+                        <p>Consistent moisture levels lead to healthier plants and better growth outcomes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title">Getting Started</h2>
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <p style="font-size: 1.1rem; margin-bottom: 2rem;">Ready to build your own smart irrigation system? Follow these simple steps to get started with your Arduino-based plant care solution.</p>
+                <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; text-align: left;">
+                    <h4 style="margin-bottom: 1rem; color: #333;">Quick Setup Guide:</h4>
+                    <ol style="line-height: 2; color: #666;">
+                        <li>Gather all required components listed above</li>
+                        <li>Connect the soil moisture sensor to analog pin A0</li>
+                        <li>Wire the relay module to digital pin 7</li>
+                        <li>Connect the water pump to the relay output</li>
+                        <li>Upload the provided Arduino code</li>
+                        <li>Test the system and adjust threshold values</li>
+                        <li>Install in your garden and enjoy automated watering!</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Smart Plant Irrigation System. Built with Arduino and passion for sustainable gardening.</p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">Perfect for makers, gardeners, and IoT enthusiasts!</p>
+        </div>
+    </footer>
+</body>
+</html>
